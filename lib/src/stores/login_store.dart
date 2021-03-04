@@ -3,9 +3,9 @@ import 'dart:convert';
 
 import 'package:mobx/mobx.dart';
 import 'package:http/http.dart' as http;
-import 'package:teste_web/utils/Helper.dart' as GLOBAL;
+import 'package:teste_web/src/utils/Helper.dart' as GLOBAL;
 
-part 'login_store.g.dart';
+part '../view/login/login_store.g.dart';
 
 class LoginStore = _LoginStore with _$LoginStore;
 

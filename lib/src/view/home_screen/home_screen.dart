@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:teste_web/utils/Helper.dart' as GLOBAL;
+import 'package:teste_web/src/utils/Helper.dart' as GLOBAL;
 
-class HomeTab extends StatefulWidget {
+class HomeScreen extends StatefulWidget {
   @override
-  _HomeTabState createState() => _HomeTabState();
+  _HomeScreenState createState() => _HomeScreenState();
 }
 
-class _HomeTabState extends State<HomeTab> {
+class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Column(

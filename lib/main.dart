@@ -1,10 +1,9 @@
 
 
 import 'package:flutter/material.dart';
-import 'package:teste_web/utils/Helper.dart' as GLOBAL;
-import 'package:teste_web/view/home/HomeScreen.dart';
+import 'package:teste_web/src/utils/Helper.dart' as GLOBAL;
 
-import 'package:teste_web/view/login/LoginScreen.dart';
+import 'package:teste_web/src/view/login/login_screen.dart';
 
 void main() {
   runApp(MyApp());
