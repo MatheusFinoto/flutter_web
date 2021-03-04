@@ -25,7 +25,8 @@ class _BaseScreenState extends State<BaseScreen> {
       children: [
         Container(
           height: 80,
-          decoration: BoxDecoration(color: GLOBAL.mediumDark),
+          //decoration: BoxDecoration(color: GLOBAL.mediumDark),
+          decoration: BoxDecoration(color: Theme.of(context).cardColor),
           child: Padding(
             padding: EdgeInsets.all(16),
             child: Row(
@@ -54,7 +55,8 @@ class _BaseScreenState extends State<BaseScreen> {
               Expanded(
                 flex: 1,
                 child: Container(
-                  decoration: BoxDecoration(color: GLOBAL.mediumDark),
+                  //decoration: BoxDecoration(color: GLOBAL.mediumDark),
+                  decoration: BoxDecoration(color: Theme.of(context).cardColor),
                   child: ListView(
                     children: [
                       meuTile("Home", Icons.home, 0),
@@ -90,10 +92,10 @@ class _BaseScreenState extends State<BaseScreen> {
 
   Widget meuTile(String nome, IconData icone, int page) {
     return ListTile(
-      title: Text(nome, style: TextStyle(color: Colors.white)),
+      title: Text(nome, style: TextStyle(color: Colors.black54)),
       leading: Icon(
         icone,
-        color: Colors.white,
+        color: Colors.black54,
       ),
       onTap: () {
         pageViewController.jumpToPage(page);

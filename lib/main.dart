@@ -1,8 +1,5 @@
-
-
 import 'package:flutter/material.dart';
 import 'package:teste_web/src/utils/Helper.dart' as GLOBAL;
-
 import 'package:teste_web/src/view/login/login_screen.dart';
 
 void main() {
@@ -15,17 +12,17 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Flutter Demo',
+      title: 'Flutter Demo Web',
       theme: ThemeData(
-        primaryColor: GLOBAL.redDark,
-        accentColor: GLOBAL.redDark,
-        brightness: Brightness.dark,
-        scaffoldBackgroundColor: GLOBAL.darkerDark,
-        visualDensity: VisualDensity.adaptivePlatformDensity,
+        // primaryColor: GLOBAL.redDark,
+        // accentColor: GLOBAL.redDark,
+        // brightness: Brightness.dark,
+        // scaffoldBackgroundColor: GLOBAL.darkerDark,
+        // visualDensity: VisualDensity.adaptivePlatformDensity,
+        accentColor: Colors.blue,
+        scaffoldBackgroundColor: Colors.grey[200],
       ),
       home: LoginScreen(),
     );
   }
 }
-
-

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_mobx/flutter_mobx.dart';
 import 'package:teste_web/src/stores/login_store.dart';
 import 'package:teste_web/src/utils/Helper.dart' as GLOBAL;
-import 'package:teste_web/src/view/home_screen/home_screen.dart';
+import 'package:teste_web/src/view/base/base_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   LoginScreen({Key key}) : super(key: key);
@@ -83,8 +83,8 @@ class _LoginScreenState extends State<LoginScreen> {
               FlatButton(
                   color: Colors.deepOrange,
                   onPressed: () {
-                    Navigator.of(context).push(
-                        MaterialPageRoute(builder: (context) => HomeScreen()));
+                    Navigator.of(context).pushReplacement(
+                        MaterialPageRoute(builder: (context) => BaseScreen()));
                   },
                   child: Text(
                     "Entrar",

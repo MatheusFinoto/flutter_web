@@ -5,7 +5,7 @@ import 'package:mobx/mobx.dart';
 import 'package:http/http.dart' as http;
 import 'package:teste_web/src/utils/Helper.dart' as GLOBAL;
 
-part '../view/login/login_store.g.dart';
+part 'login_store.g.dart';
 
 class LoginStore = _LoginStore with _$LoginStore;
 
