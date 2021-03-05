@@ -20,7 +20,7 @@ abstract class _ClienteStore with Store {
     listOfClientes.clear();
     loadingGetClientes = true;
     try {
-      await Future.delayed(Duration(seconds: 2));
+      //await Future.delayed(Duration(seconds: 2));
       var data = await http.get('https://jsonplaceholder.typicode.com/users');
 
       var response = json.decode(data.body);
