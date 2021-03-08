@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:teste_web/src/utils/Helper.dart' as GLOBAL;
+import 'package:teste_web/src/view/base/base_screen.dart';
+import 'package:teste_web/src/view/home_screen/home_screen.dart';
 import 'package:teste_web/src/view/login/login_screen.dart';
 
 void main() {
@@ -22,7 +24,7 @@ class MyApp extends StatelessWidget {
         accentColor: Colors.blue,
         scaffoldBackgroundColor: Colors.grey[200],
       ),
-      home: LoginScreen(),
+      home: BaseScreen()//LoginScreen(),
     );
   }
 }

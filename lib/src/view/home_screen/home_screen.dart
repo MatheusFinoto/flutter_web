@@ -1,14 +1,162 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
-import 'package:teste_web/src/utils/Helper.dart' as GLOBAL;
+import 'package:flutter_mobx/flutter_mobx.dart';
+import 'package:table_calendar/table_calendar.dart';
+import 'package:teste_web/src/stores/home_store.dart';
 import 'package:graphic/graphic.dart' as graphic;
+
+// Example holidays
+final Map<DateTime, List> _holidays = {
+  DateTime(2020, 1, 1): ['New Year\'s Day'],
+  DateTime(2020, 1, 6): ['Epiphany'],
+  DateTime(2020, 2, 14): ['Valentine\'s Day'],
+  DateTime(2020, 4, 21): ['Easter Sunday'],
+  DateTime(2020, 4, 22): ['Easter Monday'],
+};
+
+
 
 class HomeScreen extends StatefulWidget {
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin{
+
+  HomeStore hs = HomeStore();
+
+  Map<DateTime, List> _events;
+  List _selectedEvents;
+  AnimationController _animationController;
+  CalendarController _calendarController;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    hs.loadListOfData();
+    final _selectedDay = DateTime.now();
+
+    _events = {
+      _selectedDay.subtract(Duration(days: 30)): [
+        'Event A0',
+        'Event B0',
+        'Event C0'
+      ],
+      _selectedDay.subtract(Duration(days: 27)): ['Event A1'],
+      _selectedDay.subtract(Duration(days: 20)): [
+        'Event A2',
+        'Event B2',
+        'Event C2',
+        'Event D2'
+      ],
+      _selectedDay.subtract(Duration(days: 16)): ['Event A3', 'Event B3'],
+      _selectedDay.subtract(Duration(days: 10)): [
+        'Event A4',
+        'Event B4',
+        'Event C4'
+      ],
+      _selectedDay.subtract(Duration(days: 4)): [
+        'Event A5',
+        'Event B5',
+        'Event C5'
+      ],
+      _selectedDay.subtract(Duration(days: 2)): ['Event A6', 'Event B6'],
+      _selectedDay: ['Event A7', 'Event B7', 'Event C7', 'Event D7'],
+      _selectedDay.add(Duration(days: 1)): [
+        'Event A8',
+        'Event B8',
+        'Event C8',
+        'Event D8'
+      ],
+      _selectedDay.add(Duration(days: 3)):
+      Set.from(['Event A9', 'Event A9', 'Event B9']).toList(),
+      _selectedDay.add(Duration(days: 7)): [
+        'Event A10',
+        'Event B10',
+        'Event C10'
+      ],
+      _selectedDay.add(Duration(days: 11)): ['Event A11', 'Event B11'],
+      _selectedDay.add(Duration(days: 17)): [
+        'Event A12',
+        'Event B12',
+        'Event C12',
+        'Event D12'
+      ],
+      _selectedDay.add(Duration(days: 22)): ['Event A13', 'Event B13'],
+      _selectedDay.add(Duration(days: 26)): [
+        'Event A14',
+        'Event B14',
+        'Event C14'
+      ],
+    };
+
+    _selectedEvents = _events[_selectedDay] ?? [];
+    _calendarController = CalendarController();
+
+    _animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 400),
+    );
+
+    _animationController.forward();
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    _calendarController.dispose();
+    super.dispose();
+  }
+
+  void _onDaySelected(DateTime day, List events, List holidays) {
+    print('CALLBACK: _onDaySelected');
+    setState(() {
+      _selectedEvents = events;
+    });
+  }
+
+  void _onVisibleDaysChanged(
+      DateTime first, DateTime last, CalendarFormat format) {
+    print('CALLBACK: _onVisibleDaysChanged');
+  }
+
+  void _onCalendarCreated(
+      DateTime first, DateTime last, CalendarFormat format) {
+    print('CALLBACK: _onCalendarCreated');
+  }
+
+
+  @override
+  void didChangeDependencies() {
+    // TODO: implement didChangeDependencies
+    super.didChangeDependencies();
+
+    // reaction((_)=>hs.changedList, (value){
+    //   print('SET STATE');
+    //   if(value == true){
+    //     setState(() {
+    //
+    //     });
+    //   }
+    //   hs.changedList = false;
+    //   //hs.testeData();
+    // });
+
+    // reaction((_)=>hs.restartedListPie, (value){
+    //   if(value == true){
+    //     print('list pie loaded');
+    //   }
+    //   hs.setRestartedListPie(false);
+    //   hs.loadListPie();
+    // });
+  }
+  int touchedIndex;
+
+
+
+
+
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
@@ -69,38 +217,52 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: Column(
                       children: [
                         Padding(
-                          child: Text('Multi Line (No Stack)', style: TextStyle(fontSize: 20)),
+                          child: Text('Venda Mensal (2021)', style: TextStyle(fontSize: 20)),
                           padding: EdgeInsets.fromLTRB(0, 40, 0, 0),
                         ),
-                        Container(
-                          width: size.width * 0.6,
-                          height: 400,
-                          child: graphic.Chart(
-                            data: adjustData,
-                            scales: {
-                              'index': graphic.CatScale(
-                                accessor: (map) => map['index'].toString(),
-                                range: [0, 1],
-                              ),
-                              'type': graphic.CatScale(
-                                accessor: (map) => map['type'] as String,
-                              ),
-                              'value': graphic.LinearScale(
-                                accessor: (map) => map['value'] as num,
-                                nice: true,
-                              ),
-                            },
-                            geoms: [graphic.LineGeom(
-                              position: graphic.PositionAttr(field: 'index*value'),
-                              color: graphic.ColorAttr(field: 'type'),
-                              shape: graphic.ShapeAttr(values: [graphic.BasicLineShape(smooth: true)]),
-                            )],
-                            axes: {
-                              'index': graphic.Defaults.horizontalAxis,
-                              'value': graphic.Defaults.verticalAxis,
-                            },
-                          ),
+                        Observer(
+                          builder: (_){
+                            return Column(
+                              children: [
+                                Container(
+                                  width: size.width * 0.6,
+                                  height: 400,
+                                  child: graphic.Chart(
+                                    data: hs.listOfData,
+                                    scales: {
+                                      'index': graphic.CatScale(
+                                        accessor: (map){
+                                          return map.index.toString();
+                                        },
+                                        range: [0, 1],
+                                      ),
+
+                                      'type': graphic.CatScale(
+                                        accessor: (map) => map.type as String,
+                                      ),
+
+                                      'value': graphic.LinearScale(
+                                        accessor: (map) => map.value as num,
+                                        nice: true,
+                                      ),
+                                    },
+                                    geoms: [graphic.LineGeom(
+                                      position: graphic.PositionAttr(field: 'index*value'),
+                                      color: graphic.ColorAttr(field: 'type'),
+
+                                      shape: graphic.ShapeAttr(values: [graphic.BasicLineShape(smooth: true)]),
+                                    )],
+                                    axes: {
+                                      'index': graphic.Defaults.horizontalAxis,
+                                      'value': graphic.Defaults.verticalAxis,
+                                    },
+                                  ),
+                                ),
+                              ],
+                            );
+                          },
                         ),
+
                       ],
                     ),
                   ),
@@ -114,7 +276,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       child: Column(
                         children: [
                           Padding(
-                            child: Text('Polar Coord Transposed', style: TextStyle(fontSize: 20)),
+                            child: Text('Produtos vendidos', style: TextStyle(fontSize: 20)),
                             padding: EdgeInsets.fromLTRB(0, 40, 0, 0),
                           ),
                           Container(
@@ -135,6 +297,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               geoms: [graphic.IntervalGeom(
                                 position: graphic.PositionAttr(field: 'genre*sold'),
                                 color: graphic.ColorAttr(field: 'genre'),
+
                               )],
                               padding: EdgeInsets.zero,
                               margin: EdgeInsets.all(20),
@@ -144,11 +307,99 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ),
                   ),
+
+
+
+
+
                 ],
               ),
             ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                children: [
+                  Card(
+                    elevation: 5,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Column(
+                      children: [
+                        Padding(
+                          child: Text('Venda Mensal (2021)', style: TextStyle(fontSize: 20)),
+                          padding: EdgeInsets.fromLTRB(0, 40, 0, 0),
+                        ),
+                        Observer(
+                          builder: (_){
+                            return Column(
+                              mainAxisSize: MainAxisSize.max,
+                              children: <Widget>[
+                                // Switch out 2 lines below to play with TableCalendar's settings
+                                //-----------------------
+                                _buildTableCalendar(),
+                                // _buildTableCalendarWithBuilders(),
+                                const SizedBox(height: 8.0),
+                                _buildButtons(),
+                                const SizedBox(height: 8.0),
+                                //Expanded(child: _buildEventList()),
+                              ],
+                            );
+                          },
+                        ),
+
+                      ],
+                    ),
+                  ),
+                  SizedBox(width: 8,),
+                  Expanded(
+                    child: Card(
+                      elevation: 5,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Column(
+                        children: [
+                          Padding(
+                            child: Text('Produtos vendidos', style: TextStyle(fontSize: 20)),
+                            padding: EdgeInsets.fromLTRB(0, 40, 0, 0),
+                          ),
+                          Container(
+                            width: 350,
+                            height: 400,
+                            child: graphic.Chart(
+                              data: basicData,
+                              scales: {
+                                'genre': graphic.CatScale(
+                                  accessor: (map) => map['genre'] as String,
+                                ),
+                                'sold': graphic.LinearScale(
+                                  accessor: (map) => map['sold'] as num,
+                                  nice: true,
+                                )
+                              },
+                              coord: graphic.PolarCoord(transposed: true, innerRadius: 0.5),
+                              geoms: [graphic.IntervalGeom(
+                                position: graphic.PositionAttr(field: 'genre*sold'),
+                                color: graphic.ColorAttr(field: 'genre'),
+
+                              )],
+                              padding: EdgeInsets.zero,
+                              margin: EdgeInsets.all(20),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
 
 
+
+
+
+                ],
+              ),
+            ),
           ],
 
         ),
@@ -156,65 +407,8 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  // Column(
-  // children: [
-  // Row(
-  // crossAxisAlignment: CrossAxisAlignment.center,
-  // mainAxisAlignment: MainAxisAlignment.spaceBetween,
-  // children: [
-  // meuCard("Clientes: 10", GLOBAL.redDark),
-  // meuCard("Produtos: 143", Colors.green[600]),
-  // meuCard("Vendas: 100", Colors.blue[600]),
-  // meuCard("Funcionarios: 10", Colors.amber),
-  // ],
-  // ),
-  //
-  // // Container(
-  // //   height: 75,
-  // //   decoration: BoxDecoration(
-  // //     color: GLOBAL.redDark
-  // //   ),
-  // //   child: Padding(
-  // //     padding: EdgeInsets.all(16),
-  // //     child:  Row(
-  // //     crossAxisAlignment: CrossAxisAlignment.center,
-  // //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-  // //     children: [
-  // //       Text("HOME", style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),),
-  // //       Container()
-  // //     ],
-  // //   ),
-  // //   )
-  // // ),
-  // Expanded(
-  // child: Padding(
-  // padding: EdgeInsets.all(16),
-  // // child: FutureBuilder(
-  // //     future: loadData(),
-  // //     builder: (_, snap){
-  // //       if(!snap.hasData){
-  // //         return Center(child: CircularProgressIndicator(),);
-  // //       }else{
-  // //         return ListView.builder(
-  // //           itemCount: snap.data.length,
-  // //         itemBuilder: (_, index){
-  // //           return ListTile(
-  // //             // leading: CircleAvatar(
-  // //             //   backgroundImage: NetworkImage("https://picsum.photos/$index/300"),
-  // //             // ),
-  // //             title: Text("${snap.data[index]["name"]}"),
-  // //           );
-  // //         }
-  // //       );
-  // //       }
-  //
-  // //     },
-  // //   ),
-  // ),
-  // )
-  //
-  // ],
-  // );
+
+
 
 
 
@@ -250,45 +444,228 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-}
+  Widget _buildTableCalendar() {
+    return TableCalendar(
+      calendarController: _calendarController,
+      events: _events,
+      holidays: _holidays,
+      startingDayOfWeek: StartingDayOfWeek.monday,
+      calendarStyle: CalendarStyle(
+        selectedColor: Colors.deepOrange[400],
+        todayColor: Colors.deepOrange[200],
+        markersColor: Colors.brown[700],
+        outsideDaysVisible: false,
+      ),
+      headerStyle: HeaderStyle(
+        formatButtonTextStyle:
+        TextStyle().copyWith(color: Colors.white, fontSize: 15.0),
+        formatButtonDecoration: BoxDecoration(
+          color: Colors.deepOrange[400],
+          borderRadius: BorderRadius.circular(16.0),
+        ),
+      ),
+      onDaySelected: _onDaySelected,
+      onVisibleDaysChanged: _onVisibleDaysChanged,
+      onCalendarCreated: _onCalendarCreated,
+    );
+  }
 
-const adjustData = [
-  {"type":"Email","index":0,"value":120},
-  {"type":"Email","index":1,"value":132},
-  {"type":"Email","index":2,"value":101},
-  {"type":"Email","index":3,"value":134},
-  {"type":"Email","index":4,"value":90},
-  {"type":"Email","index":5,"value":230},
-  {"type":"Email","index":6,"value":210},
-  {"type":"Affiliate","index":0,"value":220},
-  {"type":"Affiliate","index":1,"value":182},
-  {"type":"Affiliate","index":2,"value":191},
-  {"type":"Affiliate","index":3,"value":234},
-  {"type":"Affiliate","index":4,"value":290},
-  {"type":"Affiliate","index":5,"value":330},
-  {"type":"Affiliate","index":6,"value":310},
-  {"type":"Video","index":0,"value":150},
-  {"type":"Video","index":1,"value":232},
-  {"type":"Video","index":2,"value":201},
-  {"type":"Video","index":3,"value":154},
-  {"type":"Video","index":4,"value":190},
-  {"type":"Video","index":5,"value":330},
-  {"type":"Video","index":6,"value":410},
-  {"type":"Direct","index":0,"value":320},
-  {"type":"Direct","index":1,"value":332},
-  {"type":"Direct","index":2,"value":301},
-  {"type":"Direct","index":3,"value":334},
-  {"type":"Direct","index":4,"value":390},
-  {"type":"Direct","index":5,"value":330},
-  {"type":"Direct","index":6,"value":320},
-  {"type":"Search","index":0,"value":320},
-  {"type":"Search","index":1,"value":432},
-  {"type":"Search","index":2,"value":401},
-  {"type":"Search","index":3,"value":434},
-  {"type":"Search","index":4,"value":390},
-  {"type":"Search","index":5,"value":430},
-  {"type":"Search","index":6,"value":420},
-];
+  // More advanced TableCalendar configuration (using Builders & Styles)
+  Widget _buildTableCalendarWithBuilders() {
+    return TableCalendar(
+      locale: 'pl_PL',
+      calendarController: _calendarController,
+      events: _events,
+      holidays: _holidays,
+      initialCalendarFormat: CalendarFormat.month,
+      formatAnimation: FormatAnimation.slide,
+      startingDayOfWeek: StartingDayOfWeek.sunday,
+      availableGestures: AvailableGestures.all,
+      availableCalendarFormats: const {
+        CalendarFormat.month: '',
+        CalendarFormat.week: '',
+      },
+      calendarStyle: CalendarStyle(
+        outsideDaysVisible: false,
+        weekendStyle: TextStyle().copyWith(color: Colors.blue[800]),
+        holidayStyle: TextStyle().copyWith(color: Colors.blue[800]),
+      ),
+      daysOfWeekStyle: DaysOfWeekStyle(
+        weekendStyle: TextStyle().copyWith(color: Colors.blue[600]),
+      ),
+      headerStyle: HeaderStyle(
+        centerHeaderTitle: true,
+        formatButtonVisible: false,
+      ),
+      builders: CalendarBuilders(
+        selectedDayBuilder: (context, date, _) {
+          return FadeTransition(
+            opacity: Tween(begin: 0.0, end: 1.0).animate(_animationController),
+            child: Container(
+              margin: const EdgeInsets.all(4.0),
+              padding: const EdgeInsets.only(top: 5.0, left: 6.0),
+              color: Colors.deepOrange[300],
+              width: 100,
+              height: 100,
+              child: Text(
+                '${date.day}',
+                style: TextStyle().copyWith(fontSize: 16.0),
+              ),
+            ),
+          );
+        },
+        todayDayBuilder: (context, date, _) {
+          return Container(
+            margin: const EdgeInsets.all(4.0),
+            padding: const EdgeInsets.only(top: 5.0, left: 6.0),
+            color: Colors.amber[400],
+            width: 100,
+            height: 100,
+            child: Text(
+              '${date.day}',
+              style: TextStyle().copyWith(fontSize: 16.0),
+            ),
+          );
+        },
+        markersBuilder: (context, date, events, holidays) {
+          final children = <Widget>[];
+
+          if (events.isNotEmpty) {
+            children.add(
+              Positioned(
+                right: 1,
+                bottom: 1,
+                child: _buildEventsMarker(date, events),
+              ),
+            );
+          }
+
+          if (holidays.isNotEmpty) {
+            children.add(
+              Positioned(
+                right: -2,
+                top: -2,
+                child: _buildHolidaysMarker(),
+              ),
+            );
+          }
+
+          return children;
+        },
+      ),
+      onDaySelected: (date, events, holidays) {
+        _onDaySelected(date, events, holidays);
+        _animationController.forward(from: 0.0);
+      },
+      onVisibleDaysChanged: _onVisibleDaysChanged,
+      onCalendarCreated: _onCalendarCreated,
+    );
+  }
+
+  Widget _buildEventsMarker(DateTime date, List events) {
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 300),
+      decoration: BoxDecoration(
+        shape: BoxShape.rectangle,
+        color: _calendarController.isSelected(date)
+            ? Colors.brown[500]
+            : _calendarController.isToday(date)
+            ? Colors.brown[300]
+            : Colors.blue[400],
+      ),
+      width: 16.0,
+      height: 16.0,
+      child: Center(
+        child: Text(
+          '${events.length}',
+          style: TextStyle().copyWith(
+            color: Colors.white,
+            fontSize: 12.0,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildHolidaysMarker() {
+    return Icon(
+      Icons.add_box,
+      size: 20.0,
+      color: Colors.blueGrey[800],
+    );
+  }
+
+  Widget _buildButtons() {
+    final dateTime = _events.keys.elementAt(_events.length - 2);
+
+    return Column(
+      children: <Widget>[
+        Row(
+          mainAxisSize: MainAxisSize.max,
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: <Widget>[
+            RaisedButton(
+              child: Text('Month'),
+              onPressed: () {
+                setState(() {
+                  _calendarController.setCalendarFormat(CalendarFormat.month);
+                });
+              },
+            ),
+            RaisedButton(
+              child: Text('2 weeks'),
+              onPressed: () {
+                setState(() {
+                  _calendarController
+                      .setCalendarFormat(CalendarFormat.twoWeeks);
+                });
+              },
+            ),
+            RaisedButton(
+              child: Text('Week'),
+              onPressed: () {
+                setState(() {
+                  _calendarController.setCalendarFormat(CalendarFormat.week);
+                });
+              },
+            ),
+          ],
+        ),
+        const SizedBox(height: 8.0),
+        RaisedButton(
+          child: Text(
+              'Set day ${dateTime.day}-${dateTime.month}-${dateTime.year}'),
+          onPressed: () {
+            _calendarController.setSelectedDay(
+              DateTime(dateTime.year, dateTime.month, dateTime.day),
+              runCallback: true,
+            );
+          },
+        ),
+      ],
+    );
+  }
+
+  Widget _buildEventList() {
+    return ListView(
+      children: _selectedEvents
+          .map((event) => Container(
+        decoration: BoxDecoration(
+          border: Border.all(width: 0.8),
+          borderRadius: BorderRadius.circular(12.0),
+        ),
+        margin:
+        const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
+        child: ListTile(
+          title: Text(event.toString()),
+          onTap: () => print('$event tapped!'),
+        ),
+      ))
+          .toList(),
+    );
+  }
+
+}
 
 const basicData = [
   { 'genre': 'Sports', 'sold': 275 },
