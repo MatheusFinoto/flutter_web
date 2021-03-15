@@ -72,16 +72,17 @@ class _ClienteScreenState extends State<ClienteScreen> {
                               fontSize: 20,
                               fontWeight: FontWeight.bold),
                         ),
-                        Expanded(
-                            child: Padding(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 31,
-                          ),
-                          child: TextField(
-                            decoration: InputDecoration(hintText: "Pesquisar..."),
-                            onChanged: cs.setFilter,
-                          ),
-                        )),
+                        // Expanded(
+                        //     child: Padding(
+                        //     padding: EdgeInsets.symmetric(
+                        //       horizontal: 31,
+                        //     ),
+                        //     child: TextField(
+                        //       decoration: InputDecoration(hintText: "Pesquisar..."),
+                        //       onChanged: cs.setFilter,
+                        //     ),
+                        //   )
+                        // ),
                         SizedBox(
                           height: 35,
                           child: FlatButton(
@@ -142,67 +143,64 @@ class _ClienteScreenState extends State<ClienteScreen> {
                           if (cs.listOfClientes.isEmpty) {
                             return Text('LISTA VAZIA');
                           } else {
-                            return RefreshIndicator(
-                              onRefresh: cs.getClientes,
-                              child: ListView.builder(
-                                  itemCount: cs.clientesFiltered.length,
-                                  itemBuilder: (_, index) {
-                                    ClienteModel cm = cs.clientesFiltered[index];
-                                    return Column(
-                                      children: [
-                                        Row(
-                                          children: [
-                                            //CircleAvatar(backgroundImage: NetworkImage("https://picsum.photos/$index/300"),),
-                                            SizedBox(
-                                              width: 8,
-                                            ),
-                                            Expanded(child: Text("${cm.name}")),
-                                            SizedBox(
-                                              width: 8,
-                                            ),
-                                            Expanded(child: Text("${cm.email}")),
-                                            SizedBox(
-                                              width: 8,
-                                            ),
-                                            Row(
-                                              children: [
-                                                FlatButton(
-                                                    color: Colors.red,
-                                                    shape: RoundedRectangleBorder(
-                                                        borderRadius: BorderRadius.circular(10)),
-                                                    onPressed: () {
-                                                      //_showDialog();
-                                                      cs.listOfClientes.remove(cm);
-                                                    },
-                                                    child: Text(
-                                                      "Remover",
-                                                      style: TextStyle(color: Colors.white, fontSize: 12),
-                                                    )
-                                                ),
-                                                SizedBox(width: 4,),
-                                                FlatButton(
-                                                    color: Colors.blue,
-                                                    shape: RoundedRectangleBorder(
-                                                        borderRadius: BorderRadius.circular(10)),
-                                                    onPressed: () {
-                                                      //_showDialog();
-                                                    },
-                                                    child: Text(
-                                                      "Editar",
-                                                      style: TextStyle(color: Colors.white, fontSize: 12),
-                                                    )),
-                                              ],
-                                            ),
-                                            SizedBox(
-                                              width: 8,
-                                            ),
-                                          ],
-                                        ),
-                                        Divider()
-                                      ],
-                                    );
-                                  }),
-                            );
+                            return ListView.builder(
+                                itemCount: cs.clientesFiltered.length,
+                                itemBuilder: (_, index) {
+                                  ClienteModel cm = cs.clientesFiltered[index];
+                                  return Column(
+                                    children: [
+                                      Row(
+                                        children: [
+                                          //CircleAvatar(backgroundImage: NetworkImage("https://picsum.photos/$index/300"),),
+                                          SizedBox(
+                                            width: 8,
+                                          ),
+                                          Expanded(child: Text("${cm.name}")),
+                                          SizedBox(
+                                            width: 8,
+                                          ),
+                                          Expanded(child: Text("${cm.email}")),
+                                          SizedBox(
+                                            width: 8,
+                                          ),
+                                          Row(
+                                            children: [
+                                              FlatButton(
+                                                  color: Colors.red,
+                                                  shape: RoundedRectangleBorder(
+                                                      borderRadius: BorderRadius.circular(10)),
+                                                  onPressed: () {
+                                                    //_showDialog();
+                                                    cs.listOfClientes.remove(cm);
+                                                  },
+                                                  child: Text(
+                                                    "Remover",
+                                                    style: TextStyle(color: Colors.white, fontSize: 12),
+                                                  )
+                                              ),
+                                              SizedBox(width: 4,),
+                                              FlatButton(
+                                                  color: Colors.blue,
+                                                  shape: RoundedRectangleBorder(
+                                                      borderRadius: BorderRadius.circular(10)),
+                                                  onPressed: () {
+                                                    //_showDialog();
+                                                  },
+                                                  child: Text(
+                                                    "Editar",
+                                                    style: TextStyle(color: Colors.white, fontSize: 12),
+                                                  )),
+                                            ],
+                                          ),
+                                          SizedBox(
+                                            width: 8,
+                                          ),
+                                        ],
+                                      ),
+                                      Divider()
+                                    ],
+                                  );
+                                });
                           }
                         }
                       },

@@ -307,11 +307,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin{
                       ),
                     ),
                   ),
-
-
-
-
-
                 ],
               ),
             ),
@@ -320,6 +315,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin{
               child: Row(
                 children: [
                   Card(
+                    color: Colors.blue,
                     elevation: 5,
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(10),
@@ -327,27 +323,18 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin{
                     child: Column(
                       children: [
                         Padding(
-                          child: Text('Venda Mensal (2021)', style: TextStyle(fontSize: 20)),
+                          child: Text('Calendário', style: TextStyle(fontSize: 20)),
                           padding: EdgeInsets.fromLTRB(0, 40, 0, 0),
                         ),
                         Observer(
                           builder: (_){
-                            return Column(
-                              mainAxisSize: MainAxisSize.max,
-                              children: <Widget>[
-                                // Switch out 2 lines below to play with TableCalendar's settings
-                                //-----------------------
-                                _buildTableCalendar(),
-                                // _buildTableCalendarWithBuilders(),
-                                const SizedBox(height: 8.0),
-                                _buildButtons(),
-                                const SizedBox(height: 8.0),
-                                //Expanded(child: _buildEventList()),
-                              ],
+                            return Container(
+                              height: 450,
+                              width: 400,
+                              child: _buildTableCalendarWithBuilders(),
                             );
                           },
                         ),
-
                       ],
                     ),
                   ),
@@ -361,37 +348,65 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin{
                       child: Column(
                         children: [
                           Padding(
-                            child: Text('Produtos vendidos', style: TextStyle(fontSize: 20)),
+                            child: Text('Eventos', style: TextStyle(fontSize: 20)),
                             padding: EdgeInsets.fromLTRB(0, 40, 0, 0),
                           ),
+                          //Container(height: 0.3, width: double.infinity, color: Colors.grey,),
                           Container(
-                            width: 350,
-                            height: 400,
-                            child: graphic.Chart(
-                              data: basicData,
-                              scales: {
-                                'genre': graphic.CatScale(
-                                  accessor: (map) => map['genre'] as String,
-                                ),
-                                'sold': graphic.LinearScale(
-                                  accessor: (map) => map['sold'] as num,
-                                  nice: true,
-                                )
+                            height: 450,
+                            child: ListView.builder(
+                              itemCount: _selectedEvents.length,
+                              itemBuilder: (_, index){
+                                return ListTile(
+                                  title: Text(_selectedEvents[index].toString()),
+                                );
                               },
-                              coord: graphic.PolarCoord(transposed: true, innerRadius: 0.5),
-                              geoms: [graphic.IntervalGeom(
-                                position: graphic.PositionAttr(field: 'genre*sold'),
-                                color: graphic.ColorAttr(field: 'genre'),
-
-                              )],
-                              padding: EdgeInsets.zero,
-                              margin: EdgeInsets.all(20),
                             ),
-                          ),
+                          )
                         ],
                       ),
                     ),
                   ),
+                  // Expanded(
+                  //   child: Card(
+                  //     elevation: 5,
+                  //     shape: RoundedRectangleBorder(
+                  //       borderRadius: BorderRadius.circular(10),
+                  //     ),
+                  //     child: Column(
+                  //       children: [
+                  //         Padding(
+                  //           child: Text('Produtos vendidos', style: TextStyle(fontSize: 20)),
+                  //           padding: EdgeInsets.fromLTRB(0, 40, 0, 0),
+                  //         ),
+                  //         Container(
+                  //           width: 350,
+                  //           height: 400,
+                  //           child: graphic.Chart(
+                  //             data: basicData,
+                  //             scales: {
+                  //               'genre': graphic.CatScale(
+                  //                 accessor: (map) => map['genre'] as String,
+                  //               ),
+                  //               'sold': graphic.LinearScale(
+                  //                 accessor: (map) => map['sold'] as num,
+                  //                 nice: true,
+                  //               )
+                  //             },
+                  //             coord: graphic.PolarCoord(transposed: true, innerRadius: 0.5),
+                  //             geoms: [graphic.IntervalGeom(
+                  //               position: graphic.PositionAttr(field: 'genre*sold'),
+                  //               color: graphic.ColorAttr(field: 'genre'),
+                  //
+                  //             )],
+                  //             padding: EdgeInsets.zero,
+                  //             margin: EdgeInsets.all(20),
+                  //           ),
+                  //         ),
+                  //       ],
+                  //     ),
+                  //   ),
+                  // ),
 
 
 
@@ -446,34 +461,39 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin{
 
   Widget _buildTableCalendar() {
     return TableCalendar(
+      initialCalendarFormat: CalendarFormat.month,
+      availableCalendarFormats: {CalendarFormat.month: 'Mes', CalendarFormat.week: 'Semana'},
+      //locale: 'pt_BR',
       calendarController: _calendarController,
       events: _events,
       holidays: _holidays,
       startingDayOfWeek: StartingDayOfWeek.monday,
       calendarStyle: CalendarStyle(
-        selectedColor: Colors.deepOrange[400],
-        todayColor: Colors.deepOrange[200],
-        markersColor: Colors.brown[700],
+        selectedColor: Colors.grey[200],//Colors.deepOrange[400],
+        todayColor: Colors.white,//Colors.deepOrange[200],
+        markersColor: Colors.white,//Colors.brown[700],
+        selectedStyle: TextStyle(color: Colors.black),
+        todayStyle: TextStyle(color: Colors.black),
         outsideDaysVisible: false,
       ),
       headerStyle: HeaderStyle(
-        formatButtonTextStyle:
-        TextStyle().copyWith(color: Colors.white, fontSize: 15.0),
+        formatButtonTextStyle:TextStyle().copyWith(color: Colors.blue, fontSize: 15.0),
         formatButtonDecoration: BoxDecoration(
-          color: Colors.deepOrange[400],
+          color: Colors.white,
           borderRadius: BorderRadius.circular(16.0),
         ),
       ),
       onDaySelected: _onDaySelected,
       onVisibleDaysChanged: _onVisibleDaysChanged,
       onCalendarCreated: _onCalendarCreated,
+
     );
   }
 
   // More advanced TableCalendar configuration (using Builders & Styles)
   Widget _buildTableCalendarWithBuilders() {
     return TableCalendar(
-      locale: 'pl_PL',
+      //locale: 'pt_BR',
       calendarController: _calendarController,
       events: _events,
       holidays: _holidays,
@@ -504,12 +524,13 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin{
             child: Container(
               margin: const EdgeInsets.all(4.0),
               padding: const EdgeInsets.only(top: 5.0, left: 6.0),
-              color: Colors.deepOrange[300],
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                color: Colors.white,
+              ),
               width: 100,
               height: 100,
-              child: Text(
-                '${date.day}',
-                style: TextStyle().copyWith(fontSize: 16.0),
+              child: Text('${date.day}',style: TextStyle().copyWith(fontSize: 16.0),
               ),
             ),
           );
@@ -518,7 +539,10 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin{
           return Container(
             margin: const EdgeInsets.all(4.0),
             padding: const EdgeInsets.only(top: 5.0, left: 6.0),
-            color: Colors.amber[400],
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              color: Colors.blue[600],
+            ),
             width: 100,
             height: 100,
             child: Text(
@@ -529,7 +553,6 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin{
         },
         markersBuilder: (context, date, events, holidays) {
           final children = <Widget>[];
-
           if (events.isNotEmpty) {
             children.add(
               Positioned(
